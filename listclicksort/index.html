@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title></title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background-color: #cfd;
+    }
+    .main {
+      width: 60rem;
+      margin: 3rem auto;
+    }
+    #roster {
+      float: left;
+      width: 80%;
+      padding-left: 10rem;
+    }
+    fieldset {
+      border: 1px solid #3ac;
+      padding: 2rem;
+      background-color: #3db;
+    }
+    legend {
+      font-size: 0.875rem;
+      text-align: center;
+      border: 1px solid #3ac;
+      color: #000;
+      background-color: #fff;
+      cursor: default;
+    }
+    input {
+      font: 0.875rem/1.5 "Microsoft YaHei", sans-serif;
+      width: 7em;
+      margin-right: 1rem;
+      padding: 0 0.25em;
+      border: 1px solid #3db;
+      outline: none;
+    }
+    input:focus {
+      border-color: #3ac;
+    }
+    select {
+      font: 0.875rem "Microsoft YaHei", sans-serif;
+      width: 4em;
+      margin-right: 1rem;
+      padding-left: 0.5em;
+      border-color: #3db;
+      outline: none;
+    }
+    select:focus {
+      border-color: #3ac;
+    }
+    button {
+      display: inline-block;
+      font-size: 1rem;
+      line-height: 1.5em;
+      padding: 0 1em;
+      border: none;
+      border-radius: 3px;
+      color: #fff;
+      background-color: #48f;
+    }
+    button:hover {
+      background-color: #15f;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 0.25rem 0.5rem;
+      border: 1px solid #3ac;
+    }
+    th {
+      font-size: 1.125rem;
+      color: #fff;
+      background-color: #48f;
+      cursor: pointer;
+    }
+    tr:nth-of-type(odd) {
+      background-color: #aec;
+    }
+    tr:nth-of-type(even) {
+      background-color: #fff;
+    }
+    .btn-center {
+      text-align: center;
+    }
+    .intro {
+      float: right;
+      width: 17%;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border: 1px solid #3ac;
+      background-color: #fff;
+    }
+    .intro h1 {
+      font-size: 1.25rem;
+      color: #48f;
+    }
+    .intro p {
+      font-size: 0.875rem;
+      margin: 0.5rem 0;
+    }
+    .intro span {
+      color: #48f;
+    }
+  </style>
+</head>
+
+<body oncontextmenu="return false">
+
+<div class="main">
+  <div id="roster">
+    <fieldset>
+      <legend>添加成员</legend>
+      <div>
+        <label>姓名：</label>
+        <input type="text" v-model="newPerson.name" ref="startNew" autofocus />
+        <label>年龄：</label>
+        <input type="number" v-model="newPerson.age" />
+        <label>性别：</label>
+        <select v-model="newPerson.sex">
+          <option value="男">男</option>
+          <option value="女">女</option>
+        </select>
+        <label></label>
+        <button @click="createPerson">添加</button>
+      </div>
+    </fieldset>
+    <table>
+      <thead>
+        <tr>
+          <th>序号</th>
+          <th @click="mySort(1)">姓名</th>
+          <th @click="mySort(2)">年龄</th>
+          <th @click="mySort(3)">性别</th>
+          <th>删除</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(person,index) in people">
+          <td>{{ index+1 }}</td>
+          <td>{{ person.name }}</td>
+          <td>{{ person.age }}</td>
+          <td>{{ person.sex }}</td>
+          <td :class="'btn-center'"><button @click="deletePerson(index)">删除</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="intro">
+    <h1>操作说明</h1>
+    <div>
+      <p><span>1.添加成员：</span>在输入框中输入信息，点击添加按钮。</p>
+      <p><span>2.删除成员：</span>点击项目中的删除按钮，删除该项目。</p>
+      <p><span>3.成员排序：</span>点击表头中的“姓名”、“年龄”或“性别”，按类别排序。</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+  var vu=new Vue({
+    el: '#roster',
+    data: {
+      sortType1: 0,
+      sortType2: 0,
+      sortType3: 0,
+      newPerson: {
+        name: '',
+        age: '',
+        sex: '男'
+      },
+      people: [{
+        name: '牛大强',
+        age: 38,
+        sex: '男'
+      }, {
+        name: '王二虎',
+        age: 29,
+        sex: '男'
+      }, {
+        name: '张三凤',
+        age: 23,
+        sex: '女'
+      }, {
+        name: '李四思',
+        age: 18,
+        sex: '女'
+      }]
+    },
+    methods: {
+      createPerson: function() {
+        this.people.push(this.newPerson);
+        this.newPerson={
+          name: '',
+          age: '',
+          sex: '男'
+        };
+        this.$refs.startNew.focus();
+      },
+      deletePerson: function(index) {
+        this.people.splice(index,1);
+      },
+      mySort: function(x) {
+        if (x==1) {
+          this.sortType1=-(this.sortType1-1);
+          return this.people.sort(compare(this.sortType1,'name'));
+        }
+        if (x==2) {
+          this.sortType2=-(this.sortType2-1);
+          return this.people.sort(compare(this.sortType2,'age'));
+        }
+        if (x==3) {
+          this.sortType3=-(this.sortType3-1);
+          return this.people.sort(compare(this.sortType3,'sex'));
+        }
+        function compare(type,property) {
+          return function(a,b) {
+            var v1=a[property], v2=b[property];
+            if (x==2) {
+              if (type==1) return v1-v2;
+              if (type==0) return v2-v1;
+            } else {
+              if (type==1) return v1.localeCompare(v2);
+              if (type==0) return v2.localeCompare(v1);
+            }
+          }
+        }
+      }
+    }
+  })
+</script>
+  
+</body>
+
+</html>
+
+
+
+
